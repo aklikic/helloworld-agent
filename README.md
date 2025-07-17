@@ -198,4 +198,29 @@ mvn compile exec:java
 ```
 Open (UI)[http://localhost:9000] in your browser.
 
+# Akka Platform
 
+## Prerequisites
+- Create Akka Platform project
+- Akka CLI configure with the project
+- Akka CLI configure Akka Container Registry 
+- 
+## Package
+```shell
+mvn clean install -DskipTests
+```
+## Create a secret for OPENAI API key
+```shell
+akka secret create generic api-key-secret --literal OPENAI_API_KEY=<your-openai-api-key>
+```
+Note: Replace with your actual OpenAI API key.
+## Deploy
+```shell
+akka service deploy helloworld-agent helloworld-agent:1.0-SNAPSHOT-<you build timestamp> --push --secret-env OPENAI_API_KEY=api-key-secret/OPENAI_API_KEY
+```
+Note: Replace image timestamp with the actual timestamp from the build.
+
+## Expose service
+## Test
+Open UI on exposed host (HTTPS).<br>
+Explore Akka Console.
