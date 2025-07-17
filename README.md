@@ -142,3 +142,23 @@ curl -X POST http://localhost:9002/chat/ask \
 ```shell
 docker compose down
 ```
+
+# Add MCP Endpoints
+```text
+Create an MCP server endpoint named `UserNameMcpEndpoint` for retrieving user's name based on `userId`.
+- Place the implementation in the `com.example.api` package.
+- Provide a mock implementation that returns a random name for each query.
+- add all needed annotations (class and method)
+- use MCP Tool annotations with all required parameters including the McpEndpoint annotation
+```
+
+## Run locally
+Run the service:
+```shell
+mvn compile exec:java
+```
+Run the Anthropic MCP Inspector:
+```shell
+DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector
+```
+Explore the [MCP Inspector](http://localhost:9889).
