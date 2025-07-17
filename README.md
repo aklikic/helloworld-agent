@@ -170,3 +170,24 @@ curl -X POST http://localhost:9000/chat/ask \
 -d '{"userId": "12345", "question": "How do I say hello in German?"}'
 ```
 Explore the (Local Console)[http://localhost:9889]
+
+# Add Streaming Support
+```text
+Replace the `GreetingAgent`'s `greet` method with a streaming response.
+- Update the `GreetingAgentEndpoint`'s `ask` endpoint to use the streaming response from `GreetingAgent` and wrap it with Server-Sent Events (SSE).
+- Remove all non-streaming methods from both `GreetingAgent` and `GreetingAgentEndpoint`
+- Update the integration test to use the streaming agent.
+```
+## Run locally
+Run the service:
+```shell
+mvn compile exec:java
+```
+## Test
+### Execute cURLs
+```shell
+curl -X POST http://localhost:9000/chat/ask \
+-H "Content-Type: application/json" \
+-d '{"userId": "12345", "question": "How do I say hello in German?"}'
+```
+

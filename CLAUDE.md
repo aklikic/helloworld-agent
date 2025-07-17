@@ -68,6 +68,20 @@ public class MyAgent extends Agent {
 }
 ```
 
+### Agent with Streaming response
+```java
+@ComponentId("agent-name")
+public class MyAgent extends Agent {
+    private static final String SYSTEM_MESSAGE = "You are a helpful assistant";
+    public StreamEffect handleQuery(String query) {
+        return streamEffects()
+                .systemMessage(SYSTEM_MESSAGE)
+                .userMessage(query)
+                .thenReply();
+    }
+}
+```
+
 ### HTTP Endpoints
 ```java
 @HttpEndpoint("/api")
@@ -85,6 +99,30 @@ public class ApiEndpoint extends AbstractHttpEndpoint {
                 .inSession(sessionId)
                 .method(MyAgent::ask)
                 .invokeAsync(question);
+    }
+}
+```
+
+### HTTP Endpoints with Agent Streaming
+```java
+import akka.http.javadsl.model.HttpResponse;
+import akka.javasdk.http.HttpResponses;
+@HttpEndpoint("/api")
+@Acl(allow = @Acl.Matcher(principal = Acl.Principal.ALL))
+public class ApiEndpoint extends AbstractHttpEndpoint {
+    private final ComponentClient componentClient;
+
+    public ApiEndpoint(ComponentClient componentClient) {
+        this.componentClient = componentClient;
+    }
+    @Get("/hello")
+    public HttpResponse hello(String sessionId, String question) {
+        var tokenStream =  componentClient
+                .forAgent()
+                .inSession(sessionId)
+                .tokenStream(MyAgent::ask)
+                .source(question);
+        return HttpResponses.serverSentEvents(tokenStream);
     }
 }
 ```
@@ -141,6 +179,40 @@ public class MyTest extends TestKitSupport {
             .method(MyAgent::handleQuery)
             .invoke("test query");
         
+        assertThat(result).isEqualTo(fixedResponse);
+    }
+}
+```
+
+### Testing Patterns with Streaming
+```java
+public class MyTest extends TestKitSupport {
+
+    private final TestModelProvider mockModel = new TestModelProvider();
+
+    @Override
+    protected TestKit.Settings testKitSettings() {
+        return TestKit.Settings.DEFAULT
+                .withModelProvider(MyAgent.class, mockModel);
+    }
+    
+    @Test
+    public void testMyAgent() {
+        String fixedResponse = "Some text";
+        greetingModel.fixedResponse(fixedResponse);
+        var tokenStream = componentClient
+            .forAgent()
+            .inSession("session-id")
+            .tokenStream(MyAgent::handleQuery)
+            .source("test query");
+
+        List<String> tokens = tokenStream
+                .toMat(Sink.seq(), Keep.right())
+                .run(testKit.getMaterializer())
+                .toCompletableFuture()
+                .get();
+        
+        String result = String.join("", tokens);
         assertThat(result).isEqualTo(fixedResponse);
     }
 }

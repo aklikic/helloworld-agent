@@ -17,11 +17,11 @@ public class GreetingAgent extends Agent {
         "Use the getUserName tool to get the user's name based on their userId. " +
         "The user message format is 'userId:<userId>;question:<question>'.";
 
-    public Effect<String> ask(String question) {
+    public StreamEffect ask(String question) {
         String userId = context().sessionId();
         String formattedMessage = "userId:" + userId + ";question:" + question;
         
-        return effects()
+        return streamEffects()
                 .systemMessage(SYSTEM_MESSAGE)
                 .mcpTools(RemoteMcpTools.fromService("helloworld-agent"))
                 .userMessage(formattedMessage)
