@@ -25,7 +25,7 @@ services:
     pre_stop:
       - command: [ "rm -rf /root/.akka/local/$(hostname).conf" ]
     post_start:
-      - command: [ "chmod 755 poststart.sh && ./poststart.sh" ]
+      - command: [ "./poststart.sh" ]
     networks:
       - network
     depends_on:
@@ -52,7 +52,7 @@ services:
     pre_stop:
       - command: [ "rm -rf /root/.akka/local/$(hostname).conf" ]
     post_start:
-      - command: [ "chmod 755 poststart.sh && ./poststart.sh" ]
+      - command: [ "./poststart.sh" ]
     networks:
       - network
     depends_on:
@@ -80,7 +80,7 @@ services:
     pre_stop:
       - command: [ "rm -rf /root/.akka/local/$(hostname).conf" ]
     post_start:
-      - command: [ "chmod 755 poststart.sh && ./poststart.sh" ]
+      - command: [ "./poststart.sh" ]
     networks:
       - network
     depends_on:

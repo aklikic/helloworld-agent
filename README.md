@@ -173,7 +173,7 @@ Explore the (Local Console)[http://localhost:9889]
 
 # Add Streaming Support
 ```text
-Replace the `GreetingAgent`'s `greet` method with a streaming response.
+Replace the `GreetingAgent`'s `ask` method with a streaming response.
 - Update the `GreetingAgentEndpoint`'s `ask` endpoint to use the streaming response from `GreetingAgent` and wrap it with Server-Sent Events (SSE).
 - Remove all non-streaming methods from both `GreetingAgent` and `GreetingAgentEndpoint`
 - Update the integration test to use the streaming agent.
