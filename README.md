@@ -80,20 +80,6 @@ curl -X POST http://localhost:9000/chat/ask \
 
 Explore the (Local Console)[http://localhost:9889]
 
-## Docker Development
-
-The project includes a multi-node Docker setup for local development:
-1. PostgreSQL database container
-2. Three application nodes for cluster testing
-3. Automatic service discovery and configuration
-
-Use `docker-compose up` to start the full environment.
-
-## Guidelines
-
-### Akka Context Folder Guidelines
-- You MUST follow the guidelines provided in the akka-context folder for all Akka SDK code
-
 # Run self-managed using docker-compose
 
 ## Package
@@ -162,3 +148,25 @@ Run the Anthropic MCP Inspector:
 DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector
 ```
 Explore the [MCP Inspector](http://localhost:9889).
+
+# Add MCP Tool to the Agent
+```text
+Update the `GreetingAgent` to display the user's name during the first interaction, for example: "Hello <user name>!".
+- Configure GreetingAgent to use `UserNameMcpEndpoint` as an MCP tool. No need to use AllowedToolNames. Use the service name specified by the `artifactId` in `pom.xml`.
+- set `userId` from context().sessionId().
+- Add the `userId` to the user message in the following format: "userId:<userId>;question:
+- update system prompt accordingly 
+```
+## Run locally
+Run the service:
+```shell
+mvn compile exec:java
+```
+## Test
+### Execute cURLs
+```shell
+curl -X POST http://localhost:9000/chat/ask \
+-H "Content-Type: application/json" \
+-d '{"userId": "12345", "question": "How do I say hello in German?"}'
+```
+Explore the (Local Console)[http://localhost:9889]

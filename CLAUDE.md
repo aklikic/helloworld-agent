@@ -58,9 +58,10 @@ mvn test -Dtest=ClassName#methodName  # Run specific test
 ```java
 @ComponentId("agent-name")
 public class MyAgent extends Agent {
+    private static final String SYSTEM_MESSAGE = "You are a helpful assistant";
     public Effect<String> handleQuery(String query) {
         return effects()
-            .systemMessage("You are a helpful assistant")
+            .systemMessage(SYSTEM_MESSAGE)
             .userMessage(query)
             .thenReply();
     }
@@ -96,6 +97,21 @@ public class McpEndpoint {
     @McpTool(name = "tool-name", description = "Tool description")
     public String toolMethod(String input) {
         return processInput(input);
+    }
+}
+```
+
+### Agent with MCP Tools
+```java
+@ComponentId("agent-name")
+public class MyAgent extends Agent {
+    private static final String SYSTEM_MESSAGE = "You are a helpful assistant";
+    public Effect<String> handleQuery(String query) {
+        return effects()
+            .systemMessage(SYSTEM_MESSAGE)
+            .mcpTools(RemoteMcpTools.fromService("service-name"))
+            .userMessage(query)
+            .thenReply();
     }
 }
 ```
