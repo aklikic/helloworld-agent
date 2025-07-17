@@ -79,3 +79,66 @@ curl -X POST http://localhost:9000/chat/ask \
 ```
 
 Explore the (Local Console)[http://localhost:9889]
+
+## Docker Development
+
+The project includes a multi-node Docker setup for local development:
+1. PostgreSQL database container
+2. Three application nodes for cluster testing
+3. Automatic service discovery and configuration
+
+Use `docker-compose up` to start the full environment.
+
+## Guidelines
+
+### Akka Context Folder Guidelines
+- You MUST follow the guidelines provided in the akka-context folder for all Akka SDK code
+
+# Run self-managed using docker-compose
+
+## Package
+
+```shell
+mvn clean install -DskipTests -Pstandalone
+```
+Update `docker-compose.yml` with the correct image tag.<br>
+
+## Run
+Run the docker-compose:
+```shell
+docker compose up
+```
+
+## Test
+### Execute cURLs
+```shell
+curl -X POST http://localhost:9001/chat/ask \
+-H "Content-Type: application/json" \
+-d '{"userId": "Tyler", "question": "How do I say hello in German?"}'
+```
+```shell
+curl -X POST http://localhost:9002/chat/ask \
+-H "Content-Type: application/json" \
+-d '{"userId": "Alan", "question": "How do I say hello in Spanish?"}'
+```
+
+### Kill one instance
+```shell
+docker compose kill helloworld-agent-1
+```
+### Execute cURLs
+```shell
+curl -X POST http://localhost:9002/chat/ask \
+-H "Content-Type: application/json" \
+-d '{"userId": "Tyler", "question": "How do I say hello in German?"}'
+```
+```shell
+curl -X POST http://localhost:9002/chat/ask \
+-H "Content-Type: application/json" \
+-d '{"userId": "Alan", "question": "How do I say hello in Spanish?"}'
+```
+
+### Clean up
+```shell
+docker compose down
+```

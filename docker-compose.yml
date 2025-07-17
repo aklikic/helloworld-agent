@@ -20,12 +20,12 @@ services:
   # Dynamic config generator that discovers all services
 
   helloworld-agent-1:
-    image: helloworld-agent:1.0-SNAPSHOT-20250716153937
+    image: helloworld-agent:1.0-SNAPSHOT-20250717093912
     container_name: helloworld-agent-1
     pre_stop:
-      - command: [ "rm -rf ~/.akka/local/$(hostname).conf" ]
+      - command: [ "rm -rf /root/.akka/local/$(hostname).conf" ]
     post_start:
-      - command: [ "./poststart.sh" ]
+      - command: [ "chmod 755 poststart.sh && ./poststart.sh" ]
     networks:
       - network
     depends_on:
@@ -35,7 +35,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ${HOME}/.akka/local:~/.akka/local
+      - ${HOME}/.akka/local:/root/.akka/local
       - ./poststart.sh:/poststart.sh
     environment:
       # jvm -D properties can be added under this environment map (note: remove this comment when adding properties)
@@ -47,12 +47,12 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
 
   helloworld-agent-2:
-    image: helloworld-agent:1.0-SNAPSHOT-20250716153937
+    image: helloworld-agent:1.0-SNAPSHOT-20250717093912
     container_name: helloworld-agent-2
     pre_stop:
-      - command: [ "rm -rf ~/.akka/local/$(hostname).conf" ]
+      - command: [ "rm -rf /root/.akka/local/$(hostname).conf" ]
     post_start:
-      - command: [ "./poststart.sh" ]
+      - command: [ "chmod 755 poststart.sh && ./poststart.sh" ]
     networks:
       - network
     depends_on:
@@ -62,7 +62,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ${HOME}/.akka/local:~/.akka/local
+      - ${HOME}/.akka/local:/root/.akka/local
       - ./poststart.sh:/poststart.sh
     environment:
       # jvm -D properties can be added under this environment map (note: remove this comment when adding properties)
@@ -75,12 +75,12 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
 
   helloworld-agent-3:
-    image: helloworld-agent:1.0-SNAPSHOT-20250716153937
+    image: helloworld-agent:1.0-SNAPSHOT-20250717093912
     container_name: helloworld-agent-3
     pre_stop:
-      - command: [ "rm -rf ~/.akka/local/$(hostname).conf" ]
+      - command: [ "rm -rf /root/.akka/local/$(hostname).conf" ]
     post_start:
-      - command: [ "./poststart.sh" ]
+      - command: [ "chmod 755 poststart.sh && ./poststart.sh" ]
     networks:
       - network
     depends_on:
@@ -91,7 +91,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ${HOME}/.akka/local:~/.akka/local
+      - ${HOME}/.akka/local:/root/.akka/local
       - ./poststart.sh:/poststart.sh
     environment:
       # jvm -D properties can be added under this environment map (note: remove this comment when adding properties)
