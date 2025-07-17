@@ -191,3 +191,11 @@ curl -X POST http://localhost:9000/chat/ask \
 -d '{"userId": "12345", "question": "How do I say hello in German?"}'
 ```
 
+# Add UI
+Run the service:
+```shell
+mvn compile exec:java
+```
+Open (UI)[http://localhost:9000] in your browser.
+
+
