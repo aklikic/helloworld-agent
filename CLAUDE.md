@@ -72,9 +72,18 @@ public class MyAgent extends Agent {
 @HttpEndpoint("/api")
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.ALL))
 public class ApiEndpoint extends AbstractHttpEndpoint {
+    private final ComponentClient componentClient;
+
+    public ApiEndpoint(ComponentClient componentClient) {
+        this.componentClient = componentClient;
+    }
     @Get("/hello")
-    public String hello() {
-        return "Hello World";
+    public String hello(String sessionId, String question) {
+        return componentClient
+                .forAgent()
+                .inSession(sessionId)
+                .method(MyAgent::ask)
+                .invokeAsync(question);
     }
 }
 ```
@@ -97,16 +106,26 @@ public class McpEndpoint {
 - Test pattern:
 ```java
 public class MyTest extends TestKitSupport {
+
+    private final TestModelProvider mockModel = new TestModelProvider();
+
+    @Override
+    protected TestKit.Settings testKitSettings() {
+        return TestKit.Settings.DEFAULT
+                .withModelProvider(MyAgent.class, mockModel);
+    }
+    
     @Test
-    public void testAgent() {
+    public void testMyAgent() {
+        String fixedResponse = "Some text";
+        greetingModel.fixedResponse(fixedResponse);
         var result = componentClient
             .forAgent()
             .inSession("session-id")
-            .withModel(mockModel)
             .method(MyAgent::handleQuery)
             .invoke("test query");
         
-        assertThat(result).isEqualTo("expected response");
+        assertThat(result).isEqualTo(fixedResponse);
     }
 }
 ```
