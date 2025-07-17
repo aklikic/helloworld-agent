@@ -1,0 +1,108 @@
+version: "3"
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres_db
+    networks:
+      - network
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: [ 'CMD', 'pg_isready', "-q", "-d", "postgres", "-U", "postgres" ]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+
+  # Dynamic config generator that discovers all services
+
+  helloworld-agent-1:
+    image: helloworld-agent:1.0-SNAPSHOT-20250716153937
+    container_name: helloworld-agent-1
+    pre_stop:
+      - command: [ "rm -rf ~/.akka/local/$(hostname).conf" ]
+    post_start:
+      - command: [ "./poststart.sh" ]
+    networks:
+      - network
+    depends_on:
+      - postgres-db
+    ports:
+      - "9001:9001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${HOME}/.akka/local:~/.akka/local
+      - ./poststart.sh:/poststart.sh
+    environment:
+      # jvm -D properties can be added under this environment map (note: remove this comment when adding properties)
+      JAVA_TOOL_OPTIONS: -Dconfig.resource=application-docker.conf -Dakka.remote.artery.canonical.hostname=helloworld-agent-1 -Dakka.remote.artery.canonical.port=25520 -Dakka.cluster.seed-nodes.0=akka://akka-runtime@helloworld-agent-1:25520 -Dakka.cluster.seed-nodes.1=akka://akka-runtime@helloworld-agent-2:25520 -Dakka.cluster.seed-nodes.2=akka://akka-runtime@helloworld-agent-3:25520
+      # those variables are defined in the .env file
+      STANDALONE_SINGLE_NODE: false
+      DB_HOST: "postgres-db"
+      HTTP_PORT: "9001"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+  helloworld-agent-2:
+    image: helloworld-agent:1.0-SNAPSHOT-20250716153937
+    container_name: helloworld-agent-2
+    pre_stop:
+      - command: [ "rm -rf ~/.akka/local/$(hostname).conf" ]
+    post_start:
+      - command: [ "./poststart.sh" ]
+    networks:
+      - network
+    depends_on:
+      - postgres-db
+    ports:
+      - "9002:9002"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${HOME}/.akka/local:~/.akka/local
+      - ./poststart.sh:/poststart.sh
+    environment:
+      # jvm -D properties can be added under this environment map (note: remove this comment when adding properties)
+      JAVA_TOOL_OPTIONS: -Dconfig.resource=application-docker.conf -Dakka.remote.artery.canonical.hostname=helloworld-agent-2 -Dakka.remote.artery.canonical.port=25520 -Dakka.cluster.seed-nodes.0=akka://akka-runtime@helloworld-agent-1:25520 -Dakka.cluster.seed-nodes.1=akka://akka-runtime@helloworld-agent-2:25520 -Dakka.cluster.seed-nodes.2=akka://akka-runtime@helloworld-agent-3:25520
+
+      # those variables are defined in the .env file
+      STANDALONE_SINGLE_NODE: false
+      DB_HOST: "postgres-db"
+      HTTP_PORT: "9002"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+  helloworld-agent-3:
+    image: helloworld-agent:1.0-SNAPSHOT-20250716153937
+    container_name: helloworld-agent-3
+    pre_stop:
+      - command: [ "rm -rf ~/.akka/local/$(hostname).conf" ]
+    post_start:
+      - command: [ "./poststart.sh" ]
+    networks:
+      - network
+    depends_on:
+      - postgres-db
+    ports:
+      - "9003:9003"
+    #      - "25522:25520"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${HOME}/.akka/local:~/.akka/local
+      - ./poststart.sh:/poststart.sh
+    environment:
+      # jvm -D properties can be added under this environment map (note: remove this comment when adding properties)
+      JAVA_TOOL_OPTIONS: -Dconfig.resource=application-docker.conf -Dakka.remote.artery.canonical.hostname=helloworld-agent-3 -Dakka.remote.artery.canonical.port=25520 -Dakka.cluster.seed-nodes.0=akka://akka-runtime@helloworld-agent-1:25520 -Dakka.cluster.seed-nodes.1=akka://akka-runtime@helloworld-agent-2:25520 -Dakka.cluster.seed-nodes.2=akka://akka-runtime@helloworld-agent-3:25520
+
+      # those variables are defined in the .env file
+      STANDALONE_SINGLE_NODE: false
+      DB_HOST: "postgres-db"
+      HTTP_PORT: "9003"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+networks:
+  network:
+    driver: bridge
