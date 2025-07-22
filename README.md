@@ -3,12 +3,17 @@
 * Apache Maven
 * Docker (for docker-compose run & deployment)
 * OpenAI API key (set `OPENAI_API_KEY` envirtonment variable)
+* [Akka CLI](https://doc.akka.io/operations/cli/installation.html) installed 
 # Setup
 
+1. Kickstart a new Akka project:
 ```shell
 akka code init helloworld-agent
 ```
-Open Claude in IDE terminal:
+2. Remove all files in the `src/main/java` and `src/test/java` directories.
+3. Import into your IDE as a Maven project.
+4. copy `CLAUDE.md` to the root of the project.
+
 # Generate an Agent
 
 ```text
@@ -201,9 +206,10 @@ Open (UI)[http://localhost:9000] in your browser.
 # Akka Platform
 
 ## Prerequisites
-- Create Akka Platform project
-- Akka CLI configure with the project
-- Akka CLI configure Akka Container Registry 
+- [Register](https://console.akka.io/register) for Akka Platform
+- Akka CLI: [Create](https://doc.akka.io/operations/cli/using-cli.html#_creating_a_new_project) new project
+- Akka CLI: [Login](https://doc.akka.io/operations/cli/using-cli.html#_logging_in)
+- Akka CLI: [Configure](https://doc.akka.io/operations/projects/container-registries.html#_akka_container_registry) Akka Container Registry 
 - 
 ## Package
 ```shell
@@ -221,6 +227,9 @@ akka service deploy helloworld-agent helloworld-agent:1.0-SNAPSHOT-<you build ti
 Note: Replace image timestamp with the actual timestamp from the build.
 
 ## Expose service
+```shell
+akka services expose helloworld-agent
+```
 ## Test
 Open UI on exposed host (HTTPS).<br>
 Explore Akka Console.
